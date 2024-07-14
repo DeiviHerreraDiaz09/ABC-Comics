@@ -1,7 +1,7 @@
 import React from 'react';
 import "./CardGridComponent.css";
 
-const CardGridComponent = ({ comics, formatDate }) => {
+const CardGridComponent = ({ comics, formatDate, openModal }) => {
   return (
     <div className="gridView">
       {comics.map((comic, index) => (
@@ -12,9 +12,9 @@ const CardGridComponent = ({ comics, formatDate }) => {
             <div className="back">
               <div className="inner">
                 <h2>{comic.name}</h2>
-                <p>{comic.description.length > 200 ? comic.description.substring(0, 200) + "..." : comic.description}</p>
+                <p>{comic.description.length > 200 ? comic.description.substring(0, 120) + "..." : comic.description}</p>
                 <p>{formatDate(comic.cover_date)}.</p>
-                <button>Ver más</button>
+                <button onClick={() => openModal(comic.id)}>Ver más</button>
               </div>
             </div>
           </div>
@@ -23,6 +23,5 @@ const CardGridComponent = ({ comics, formatDate }) => {
     </div>
   );
 };
-
 
 export default CardGridComponent;

@@ -24,7 +24,7 @@ app.get('/api/comics', async (req, res) => {
       name: comic.name || comic.volume.name || 'Unknown Title',
       image: comic.image.original_url,
       description: cleanHtml(comic.description) || 'Descripción no disponible.',
-      cover_date: comic.cover_date
+      cover_date: comic.cover_date,
     }));
     res.json(comics);
   } catch (error) {
@@ -45,9 +45,6 @@ app.get("/api/comics/:id", async (req, res) => {
 
     if (response.data.results) {
       const comic = response.data.results;
-
-      console.log(comic);
-
       const comicDetails = {
         id: comic.id,
         name: comic.name || comic.volume.name || 'Unknown Title',
@@ -56,6 +53,8 @@ app.get("/api/comics/:id", async (req, res) => {
         cover_date: comic.cover_date,
         issue_number: comic.issue_number,
         volume: comic.volume.name,
+        location_credits: comic.location_credits,
+        person_credits: comic.person_credits
       };
       res.json(comicDetails);
     } else {

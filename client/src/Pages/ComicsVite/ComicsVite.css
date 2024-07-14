@@ -24,9 +24,7 @@
     padding: 0;
 }
 
-.comicsVite {
-    /* Añadir estilos generales si es necesario */
-}
+.comicsVite {}
 
 .introduction {
     background-color: #131126;
@@ -65,7 +63,7 @@
 .sections>button {
     border: none;
     font-family: Raleway;
-    width: 5rem;
+    width: 8rem;
     height: 60%;
     border-radius: 15px;
 }
@@ -132,4 +130,213 @@
 .pagination .active {
     background-color: #007bff;
     color: white;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) {
+
+    .displayVis {
+        display: flex;
+        width: 100%;
+        height: 5rem;
+        justify-content: left;
+    }
+
+    .displayVis>input {
+        width: 55%;
+        height: 2rem;
+        margin: 25px;
+        padding: 2%;
+    }
+
+    .introduction>h1 {
+        font-family: AmaticSC-Regular;
+        width: 100%;
+        padding: 5%;
+        font-size: 2.5rem;
+    }
+
+    .introduction>p {
+        font-family: Raleway;
+        font-size: 1rem;
+        padding: 3%;
+    }
+
+    .modalDetails {
+        grid-template-columns: 1fr;
+    }
+
+    .imgDetailsComic {
+        width: 100%;
+        height: 200px;
+        margin: 10px 0;
+    }
+
+    .informationDetailsComic {
+        margin: 0;
+        width: 100%;
+    }
+
+    .DescriptionComicsDetails {
+        max-height: 5rem;
+    }
+}
+
+.modalDetails {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 30% 68%;
+}
+
+.containerClosedResponsive {
+    display: none;
+}
+
+.imgDetailsComic {
+    margin: 20px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.informationDetailsComic {
+    margin-left: 20px;
+    border: none;
+    height: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+    border-radius: 15px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.containerClosed {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 2.5rem;
+    justify-content: end;
+    padding: 3%;
+}
+
+.closeModal {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+    background-image: url("public/img/Style=linear.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    height: 2rem;
+    width: 2rem;
+    border: none;
+    border-radius: 50%;
+}
+
+.informationComic {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    height: 85%;
+    gap: 5px;
+}
+
+.informationComic>h1 {
+    font-family: AmaticSC-Regular;
+}
+
+.informationComic>h3 {
+    padding: 1%;
+    font-family: Raleway;
+    font-weight: 400;
+}
+
+.boldSubTitle {
+    font-weight: 600;
+}
+
+.DescriptionComicsDetails {
+    max-height: 8rem;
+    overflow-y: auto;
+}
+
+.objsDecoration {
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.objDecoration {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+    width: 9rem;
+    border: none;
+    height: 2rem;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Raleway;
+}
+
+.informationDetailsComic>h1 {
+    text-align: center;
+}
+
+@media only screen and (max-width: 768px) {
+
+    .modalDetails {
+        grid-template-columns: 1fr;
+    }
+
+    .containerClosed {
+        display: none;
+    }
+
+    .imgDetailsComic {
+        margin: 0;
+    }
+
+    .informationDetailsComic {
+        justify-content: start;
+        box-shadow: none;
+        margin: 0;
+        height: 100%;
+        margin-bottom: 20px;
+        max-height: 20rem;
+        overflow-y: auto;
+    }
+
+    .informationComic {
+        margin-top: 20px;
+        flex-direction: row;
+        height: 100%;
+        justify-content: start;
+
+    }
+
+    .containerClosedResponsive {
+        display: flex;
+        align-items: center;
+        justify-content: right;
+        width: 100%;
+        height: 1.5rem;
+    }
+
+    .responsiveButton {
+        width: 1.5rem;
+        height: 1.5rem;
+        background-image: url("public/img/Style=linear.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 70%;
+    }
 }

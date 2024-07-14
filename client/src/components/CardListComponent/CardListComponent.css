@@ -1,98 +1,97 @@
 .listView {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-  }
-  
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+
+.list {
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  width: 70%;
+  height: 14rem;
+  border: none;
+  display: flex;
+  gap: 15px;
+  border-radius: 15px;
+  align-items: center;
+}
+
+.information {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 60%;
+  padding: 2%;
+}
+
+.information>h2 {
+  font-family: AmaticSC-Regular;
+}
+
+.descriptionContainer {
+  font-family: Raleway;
+  max-height: 8rem;
+  overflow-y: auto;
+}
+
+.list>button {
+  width: 6rem;
+  height: 3rem;
+  margin-left: 50px;
+  border-radius: 15px;
+  border: none;
+}
+
+.responsive-button {
+  display: none;
+}
+
+.imgComic {
+  background-size: cover;
+  width: 15%;
+  height: 100%;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) {
   .list {
-    position: relative;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
-    overflow: hidden;
-    width: 70%;
+    width: 90%;
     height: 14rem;
-    border: none;
-    display: flex;
-    gap: 15px;
-    border-radius: 15px;
-    align-items: center;
   }
-  
+
+  .imgComic {
+    background-size: cover;
+    width: 40%;
+    height: 100%;
+  }
+
   .information {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 60%;
+    width: 53%;
     padding: 2%;
   }
-  
-  .information>h2 {
-    font-family: AmaticSC-Regular;
-  }
-  
+
   .descriptionContainer {
-    font-family: Raleway;
-    max-height: 8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 5rem;
     overflow-y: auto;
   }
-  
+
   .list>button {
-    width: 6rem;
-    height: 3rem;
-    margin-left: 50px;
-    border-radius: 15px;
-    border: none;
-  }
-  
-  .responsive-button {
     display: none;
   }
-  
-  .imgComic {
-    background-size: cover;
-    width: 15%;
-    height: 100%;
+
+  .responsive-button {
+    display: inline-block;
+    width: 100%;
+    border-radius: 15px;
+    border: none;
+    height: 1.5rem;
   }
-  
-  @media only screen and (min-device-width: 320px) and (max-device-width: 568px) {
-    .list {
-      width: 90%;
-      height: 14rem;
-    }
-  
-    .imgComic {
-      background-size: cover;
-      width: 40%;
-      height: 100%;
-    }
-  
-    .information {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      width: 53%;
-      padding: 2%;
-    }
-  
-    .descriptionContainer {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      max-height: 5rem;
-      overflow-y: auto;
-    }
-  
-    .list>button {
-      display: none;
-    }
-  
-    .responsive-button {
-      display: inline-block;
-      width: 100%;
-      border-radius: 15px;
-      border: none;
-      height: 1.5rem;
-    }
-  }
-  
+}

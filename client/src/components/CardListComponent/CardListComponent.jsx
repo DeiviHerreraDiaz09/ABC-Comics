@@ -1,7 +1,7 @@
 import React from 'react';
 import './CardListComponent.css';
 
-const CardListComponent = ({ comics, formatDate }) => {
+const CardListComponent = ({ comics, formatDate, openModal }) => {
   return (
     <div className="listView">
       {comics.map((comic, index) => (
@@ -13,9 +13,9 @@ const CardListComponent = ({ comics, formatDate }) => {
               <p>{comic.description}</p>
               <p>{formatDate(comic.cover_date)}.</p>
             </div>
-            <button className="responsive-button">Ver más</button>
+            <button className="responsive-button" onClick={() => openModal(comic.id)}>Ver más</button>
           </div>
-          <button>Ver más</button>
+          <button onClick={() => openModal(comic.id)}>Ver más</button>
         </div>
       ))}
     </div>
