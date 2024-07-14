@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "./ComicsVite.css";
 import axios from 'axios';
+import { CardGridComponent } from '../../components/CardGridComponent';
+import { CardListComponent } from '../../components/CardListComponent';
 
 const ComicsVite = () => {
-
   const [comics, setComics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,7 +12,6 @@ const ComicsVite = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const comicsPerPage = 25;
   const listRef = useRef(null);
-
 
   const indexOfLastComic = currentPage * comicsPerPage;
   const indexOfFirstComic = indexOfLastComic - comicsPerPage;
@@ -92,39 +92,9 @@ const ComicsVite = () => {
           </div>
 
           {viewMode === 'grid' ? (
-            <div className="gridView">
-              {currentComics.map((comic, index) => (
-                <div className="col" key={index}>
-                  <div className="container">
-                    <div className="front" style={{ backgroundImage: `url(${comic.image})` }}>
-                    </div>
-                    <div className="back">
-                      <div className="inner">
-                        <h2>{comic.name}</h2>
-                        <p>{comic.description.length > 200 ? comic.description.substring(0, 200) + "..." : comic.description}</p>
-                        <p>{formatDate(comic.cover_date)}.</p>
-                        <button>Ver más</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <CardGridComponent comics={currentComics} formatDate={formatDate} />
           ) : (
-
-            <div className="listView">
-              {currentComics.map((comic, index) => (
-                <div className="list" key={index}>
-                  <div className="imgComic" style={{ backgroundImage: `url(${comic.image})` }}></div>
-                  <div className="information">
-                    <h2>{comic.name}</h2>
-                    <p>{comic.description.length > 200 ? comic.description.substring(0, 200) + "..." : comic.description}</p>
-                    <p>{formatDate(comic.cover_date)}.</p>
-                  </div>
-                  <button>Ver más</button>
-                </div>
-              ))}
-            </div>
+            <CardListComponent comics={currentComics} formatDate={formatDate} />
           )}
         </div>
       )}
