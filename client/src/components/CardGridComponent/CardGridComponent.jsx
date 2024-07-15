@@ -5,9 +5,6 @@ import heart2 from '/public/img/fullHeart.svg'
 
 const CardGridComponent = ({ comics, formatDate, openModal, favorites, toggleFavorite }) => {
 
-  console.log("Comics: ", comics);
-  console.log("Favorites: ", favorites);
-
   return (
     <div className="gridView">
       {comics.map((comic, index) => (

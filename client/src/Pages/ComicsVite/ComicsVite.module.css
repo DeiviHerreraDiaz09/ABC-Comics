@@ -139,6 +139,18 @@
     background-size: 50%;
 }
 
+
+.comicsVite .displayVis .favComicsBlack {
+    width: 3rem;
+    height: 3rem;
+    background-image: url('../../public/img/heart.svg');
+}
+
+.comicsVite .displayVis .favComicsBlack.active {
+    background-size: 40%;
+    background-image: url('../../public/img/heartFullBlack.svg');
+}
+
 .switch {
     position: relative;
     display: inline-block;
@@ -150,7 +162,7 @@
     display: none;
 }
 
-.switch .switch--toggle {
+.switch .switchtoggle {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -163,7 +175,7 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
 }
 
-.switch .switch--toggle:before {
+.switch .switchtoggle:before {
     position: absolute;
     content: url("");
     background-size: 80%;
@@ -181,11 +193,11 @@
     transition: 0.4s;
 }
 
-.switch input[type='checkbox']:checked+.switch--toggle {
+.switch input[type='checkbox']:checked+.switchtoggle {
     background-color: rgb(0, 87, 128);
 }
 
-.switch input[type='checkbox']:checked+.switch--toggle:before {
+.switch input[type='checkbox']:checked+.switchtoggle:before {
     transform: translate(28px, -50%);
     content: url("");
     background-size: 60%;
@@ -364,7 +376,7 @@
 
 .objDecoration {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
-    width: 9rem;
+    width: 10.5rem;
     border: none;
     height: 2rem;
     border-radius: 15px;

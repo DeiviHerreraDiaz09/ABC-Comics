@@ -1,18 +1,21 @@
 import express from 'express';
 import axios from 'axios';
 import fs from 'fs/promises';
+import dotenv from 'dotenv';
 import cors from 'cors';
-import { fileURLToPath } from 'url';  // Importa fileURLToPath
-import path from 'path';  // Importa path
-import { cleanHtml } from "./services/comicService.js"
+import path from 'path';
+import { cleanHtml } from "./services/comicService.js";
+import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);  // Obtiene el nombre de archivo actual
-const __dirname = path.dirname(__filename);  // Obtiene el directorio base del archivo actual
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 5000;
-const apiKey = '6a648be76d37a994daf4037a2c01b66a1334f793';
 const apiUrl = 'https://comicvine.gamespot.com/api';
+const apiKey = process.env.API_KEY;
 
 app.use(cors());
 app.use(express.json());
@@ -53,7 +56,7 @@ app.get("/api/comics/:id", async (req, res) => {
       const comic = response.data.results;
       const comicDetails = {
         id: comic.id,
-        name: comic.name || comic.volume.name || 'Unknown Title',
+        name: comic.name || comic.volume.name || 'Título desconocido',
         image: comic.image.original_url,
         description: cleanHtml(comic.description) || 'Descripción no disponible.',
         cover_date: comic.cover_date,
@@ -64,10 +67,10 @@ app.get("/api/comics/:id", async (req, res) => {
       };
       res.json(comicDetails);
     } else {
-      res.status(404).json({ error: 'Comic not found' });
+      res.status(404).json({ error: 'Cómic no encontrado' });
     }
   } catch (error) {
-    console.error("Error fetching comic details:", error);
+    console.error("Error al obtener los detalles del cómic:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -79,7 +82,7 @@ app.get('/api/favComics', async (req, res) => {
     const favComics = JSON.parse(data);
     res.json(favComics);
   } catch (error) {
-    console.error("Error fetching favorite comics:", error);
+    console.error("Error al buscar cómics favoritos:", error);
     res.status(500).json({ error: error.message });
   }
 });

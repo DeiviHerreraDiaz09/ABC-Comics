@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import "./ComicsVite.css";
+import { React, useState, useEffect, useRef } from 'react';
+import styles from './ComicsVite.module.css';
 import { CardGridComponent } from '../../components/CardGridComponent';
 import { CardListComponent } from '../../components/CardListComponent';
 import Modal from 'react-modal';
+import { fetchComics, fetchFavoriteComics, fetchComicDetails, markComicAsFavorite, formatDate, redirectUrl } from '../../services/comicService.js';
 
 Modal.setAppElement('#root');
 
@@ -16,30 +16,12 @@ const ComicsVite = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [comicDetails, setComicDetails] = useState(null);
   const [favorites, setFavorites] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const comicsPerPage = 25;
   const listRef = useRef(null);
 
-  console.log(favorites);
-
   const indexOfLastComic = currentPage * comicsPerPage;
   const indexOfFirstComic = indexOfLastComic - comicsPerPage;
-
-  const filteredComics = comics.filter(comic =>
-    comic.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const currentComics = filteredComics.slice(indexOfFirstComic, indexOfLastComic);
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(filteredComics.length / comicsPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long' };
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-CO', options);
-  };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -59,11 +41,11 @@ const ComicsVite = () => {
 
   const openModal = async (comicId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/comics/${comicId}`);
-      setComicDetails(response.data);
+      const response = await fetchComicDetails(comicId);
+      setComicDetails(response);
       setModalIsOpen(true);
     } catch (error) {
-      console.error("Error fetching comic details:", error);
+      console.error("Error al obtener los detalles del cómic:", error);
     }
   };
 
@@ -72,54 +54,21 @@ const ComicsVite = () => {
     setComicDetails(null);
   };
 
-  const redirectUrl = (url) => {
-    if (url === "favComics") {
-      window.location.href = "/favComics";
-    } else if (url === "website") {
-      window.location.href = "https://comicvine.gamespot.com/api";
-    } else if (url === "gitHub") {
-      window.location.href = "https://github.com/DeiviHerreraDiaz09";
-    } else {
-      console.log("Error en el redireccionamiento de vinculos");
-    }
-  }
 
   const toggleFavorite = async (comicId) => {
     try {
-      await axios.post(`http://localhost:5000/api/favComics/mark/${comicId}`);
-      axios.get('http://localhost:5000/api/favComics')
-        .then(response => {
-          const favComicIds = response.data.map(comic => comic.id);
-          setFavorites(favComicIds);
-        })
-        .catch(error => {
-          console.error('Error fetching favorite comics:', error);
-        });
+      await markComicAsFavorite(comicId);
+      const favComicIds = await fetchFavoriteComics();
+      setFavorites(favComicIds);
     } catch (error) {
-      console.error('Error marking comic as favorite:', error);
+      console.error('Error al marcar o buscar cómics favoritos:', error);
     }
   };
 
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/comics')
-      .then(response => {
-        setComics(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching comics:', error);
-        setLoading(false);
-      });
-
-    axios.get('http://localhost:5000/api/favComics')
-      .then(response => {
-        const favComicIds = response.data.map(comic => comic.id);
-        setFavorites(favComicIds);
-      })
-      .catch(error => {
-        console.error('Error fetching favorite comics:', error);
-      });
-  }, []);
+  const toggleShowFavorites = () => {
+    setShowFavorites(prevState => !prevState);
+    setCurrentPage(1);
+  };
 
 
   const customStyles = {
@@ -135,42 +84,83 @@ const ComicsVite = () => {
     },
   };
 
+  const filteredComics = comics.filter(comic =>
+    comic.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredFavorites = favorites.length
+    ? comics.filter(comic => favorites.includes(comic.id.toString()))
+    : [];
+
+  const totalComics = showFavorites ? filteredFavorites.length : filteredComics.length;
+
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(totalComics / comicsPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
+  const currentComics = filteredComics.slice(indexOfFirstComic, indexOfLastComic);
+  const currentFavorites = filteredFavorites.slice(indexOfFirstComic, indexOfLastComic);
+  const comicsToDisplay = showFavorites ? currentFavorites : currentComics;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const comicsData = await fetchComics();
+        setComics(comicsData);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al buscar cómics:', error);
+        setLoading(false);
+      }
+
+      try {
+        const favComicIds = await fetchFavoriteComics();
+        setFavorites(favComicIds);
+      } catch (error) {
+        console.error('Error al buscar cómics favoritos:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className='comicsVite'>
-      <div className="introduction">
-        <h1>Descubre el Universo de ABC Comics y Películas</h1>
+    <div className={styles.comicsVite}>
+      <div className={styles.introduction}>
+        <h1>Descubre el Universo de ABC Comics</h1>
         <p>El sitio web de confianza donde puedes encontrar tus cómics favoritos y toda la información que necesitas. ¡Solo disfruta!</p>
-        <div className="sections">
-          <div className="website" onClick={() => redirectUrl("website")}></div>
-          <div className="github" onClick={() => redirectUrl("gitHub")}></div>
+        <div className={styles.sections}>
+          <div className={styles.website} onClick={() => redirectUrl("website")}></div>
+          <div className={styles.github} onClick={() => redirectUrl("gitHub")}></div>
         </div>
       </div>
 
       {loading ? (
-        <div className="loading">
+        <div className={styles.loading}>
           <h1>Cargando cómics...</h1>
         </div>
       ) : (
-        <div className="listComics" ref={listRef}>
-          <div className="displayVis">
+        <div className={styles.listComics} ref={listRef}>
+          <div className={styles.displayVis}>
             <input
               type="text"
               placeholder='Nombre del comic'
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <div className="btnDisplay">
-              <label className="switch">
+            <div className={styles.btnDisplay}>
+              <label className={styles.switch}>
                 <input type="checkbox" checked={viewMode === 'list'} onChange={toggleViewMode} />
-                <div className="switch--toggle"></div>
+                <div className={styles.switchtoggle}></div>
               </label>
-              <div className="favComicsBlack"></div>
+              <div className={`${styles.favComicsBlack} ${showFavorites ? styles.active : ''}`} onClick={toggleShowFavorites}></div>
             </div>
           </div>
 
           {viewMode === 'grid' ? (
             <CardGridComponent
-              comics={currentComics}
+              comics={comicsToDisplay}
               formatDate={formatDate}
               openModal={openModal}
               favorites={favorites}
@@ -178,61 +168,80 @@ const ComicsVite = () => {
             />
           ) : (
             <CardListComponent
-              comics={currentComics}
+              comics={comicsToDisplay}
               formatDate={formatDate}
               openModal={openModal}
-
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
             />
           )}
         </div>
       )}
 
-      <div className="pagination">
-        {pageNumbers.map(number => (
-          <button
-            key={number}
-            onClick={() => handlePageChange(number)}
-            className={currentPage === number ? 'active' : ''}
-          >
-            {number}
-          </button>
-        ))}
-      </div>
+      {!showFavorites && (
+        <div className={styles.pagination}>
+          {pageNumbers.map(number => (
+            <button
+              key={number}
+              onClick={() => handlePageChange(number)}
+              className={currentPage === number ? styles.active : ''}
+            >
+              {number}
+            </button>
+          ))}
+        </div>
+      )}
 
       {comicDetails && (
         <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Detalles del Cómic" style={customStyles}>
-          <div className="modalDetails">
-            <div className="containerClosedResponsive">
-              <button className="responsiveButton" onClick={closeModal}></button>
+          <div className={styles.modalDetails}>
+            <div className={styles.containerClosedResponsive}>
+              <button className={styles.responsiveButton} onClick={closeModal}></button>
             </div>
 
-            <div className="imgDetailsComic" style={{ backgroundImage: `url(${comicDetails.image})` }}></div>
-            <div className="informationDetailsComic">
-              <div className="containerClosed">
-                <div className="closeModal" onClick={closeModal}></div>
+            <div className={styles.imgDetailsComic} style={{ backgroundImage: `url(${comicDetails.image})` }}></div>
+            <div className={styles.informationDetailsComic}>
+              <div className={styles.containerClosed}>
+                <div className={styles.closeModal} onClick={closeModal}></div>
               </div>
 
-              <div className="informationComic">
+              <div className={styles.informationComic}>
                 <h1>{comicDetails.name}</h1>
-                <h3 className='DescriptionComicsDetails'><span className='boldSubTitle'>Descripción: </span>{comicDetails.description}</h3>
-                <h3><span className='boldSubTitle'>Fecha de publicación</span>: {comicDetails.cover_date}</h3>
-                <h3><span className='boldSubTitle'>Volumen</span>: {comicDetails.volume}</h3>
+                <h3 className={styles.DescriptionComicsDetails}><span className={styles.boldSubTitle}>Descripción: </span>{comicDetails.description}</h3>
+                <h3><span className={styles.boldSubTitle}>Fecha de publicación</span>: {formatDate(comicDetails.cover_date)}</h3>
+                <h3><span className={styles.boldSubTitle}>Volumen</span>: {comicDetails.volume}</h3>
                 {comicDetails.location_credits && comicDetails.location_credits.length > 0 && (
                   <>
-                    <h3><span className='boldSubTitle'>Créditos de Ubicación</span>:</h3>
-                    <div className="objsDecoration">
+                    <h3><span className={styles.boldSubTitle}>Créditos de Ubicación</span>:</h3>
+                    <div className={styles.objsDecoration}>
                       {comicDetails.location_credits.map((credit, index) => (
-                        <div className="objDecoration" key={index}>{credit.name}</div>
+                        <div className={styles.objDecoration} key={index}>
+                          <h3>{credit.name}</h3>
+                        </div>
                       ))}
                     </div>
                   </>
                 )}
                 {comicDetails.person_credits && comicDetails.person_credits.length > 0 && (
                   <>
-                    <h3><span className='boldSubTitle'>Créditos de personas:</span></h3>
-                    <div className="objsDecoration">
+                    <h3><span className={styles.boldSubTitle}>Créditos de Personas</span>:</h3>
+                    <div className={styles.objsDecoration}>
                       {comicDetails.person_credits.map((credit, index) => (
-                        <div className="objDecoration" key={index}>{credit.name}</div>
+                        <div className={styles.objDecoration} key={index}>
+                          <h3>{credit.name}</h3>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                {comicDetails.team_credits && comicDetails.team_credits.length > 0 && (
+                  <>
+                    <h3><span className={styles.boldSubTitle}>Créditos de Equipos</span>:</h3>
+                    <div className={styles.objsDecoration}>
+                      {comicDetails.team_credits.map((credit, index) => (
+                        <div className={styles.objDecoration} key={index}>
+                          <h3>{credit.name}</h3>
+                        </div>
                       ))}
                     </div>
                   </>
@@ -244,6 +253,8 @@ const ComicsVite = () => {
       )}
     </div>
   );
-}
+};
 
 export default ComicsVite;
+
+
