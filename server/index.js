@@ -1,8 +1,13 @@
 import express from 'express';
 import axios from 'axios';
+import fs from 'fs/promises';
 import cors from 'cors';
+import { fileURLToPath } from 'url';  // Importa fileURLToPath
+import path from 'path';  // Importa path
 import { cleanHtml } from "./services/comicService.js"
 
+const __filename = fileURLToPath(import.meta.url);  // Obtiene el nombre de archivo actual
+const __dirname = path.dirname(__filename);  // Obtiene el directorio base del archivo actual
 
 const app = express();
 const port = 5000;
@@ -10,6 +15,7 @@ const apiKey = '6a648be76d37a994daf4037a2c01b66a1334f793';
 const apiUrl = 'https://comicvine.gamespot.com/api';
 
 app.use(cors());
+app.use(express.json());
 
 app.get('/api/comics', async (req, res) => {
   try {
@@ -65,6 +71,49 @@ app.get("/api/comics/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/api/favComics', async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, 'data', 'favComics.json');
+    const data = await fs.readFile(filePath);
+    const favComics = JSON.parse(data);
+    res.json(favComics);
+  } catch (error) {
+    console.error("Error fetching favorite comics:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/favComics/mark/:id', async (req, res) => {
+  try {
+    const comicId = req.params.id;
+    const filePath = path.join(__dirname, 'data', 'favComics.json');
+
+    let favComics = [];
+    try {
+      const data = await fs.readFile(filePath);
+      favComics = JSON.parse(data);
+    } catch (error) {
+      console.log('Error leyendo el JSON');
+    }
+
+    const existingComicIndex = favComics.findIndex(comic => comic.id === comicId);
+
+    if (existingComicIndex !== -1) {
+      favComics = favComics.filter(comic => comic.id !== comicId);
+    } else {
+      favComics.push({ id: comicId });
+    }
+
+    await fs.writeFile(filePath, JSON.stringify(favComics, null, 2));
+
+    res.json(favComics);
+  } catch (error) {
+    console.error("Error para marcar como favorito:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);

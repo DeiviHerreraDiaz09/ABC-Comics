@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import "./ComicsVite.css";
 import axios from 'axios';
+import "./ComicsVite.css";
 import { CardGridComponent } from '../../components/CardGridComponent';
 import { CardListComponent } from '../../components/CardListComponent';
 import Modal from 'react-modal';
@@ -15,8 +15,11 @@ const ComicsVite = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [comicDetails, setComicDetails] = useState(null);
+  const [favorites, setFavorites] = useState([]);
   const comicsPerPage = 25;
   const listRef = useRef(null);
+
+  console.log(favorites);
 
   const indexOfLastComic = currentPage * comicsPerPage;
   const indexOfFirstComic = indexOfLastComic - comicsPerPage;
@@ -50,8 +53,8 @@ const ComicsVite = () => {
     setCurrentPage(1);
   };
 
-  const toggleViewMode = (mode) => {
-    setViewMode(mode);
+  const toggleViewMode = () => {
+    setViewMode(prevMode => prevMode === 'grid' ? 'list' : 'grid');
   };
 
   const openModal = async (comicId) => {
@@ -69,6 +72,34 @@ const ComicsVite = () => {
     setComicDetails(null);
   };
 
+  const redirectUrl = (url) => {
+    if (url === "favComics") {
+      window.location.href = "/favComics";
+    } else if (url === "website") {
+      window.location.href = "https://comicvine.gamespot.com/api";
+    } else if (url === "gitHub") {
+      window.location.href = "https://github.com/DeiviHerreraDiaz09";
+    } else {
+      console.log("Error en el redireccionamiento de vinculos");
+    }
+  }
+
+  const toggleFavorite = async (comicId) => {
+    try {
+      await axios.post(`http://localhost:5000/api/favComics/mark/${comicId}`);
+      axios.get('http://localhost:5000/api/favComics')
+        .then(response => {
+          const favComicIds = response.data.map(comic => comic.id);
+          setFavorites(favComicIds);
+        })
+        .catch(error => {
+          console.error('Error fetching favorite comics:', error);
+        });
+    } catch (error) {
+      console.error('Error marking comic as favorite:', error);
+    }
+  };
+
   useEffect(() => {
     axios.get('http://localhost:5000/api/comics')
       .then(response => {
@@ -79,7 +110,17 @@ const ComicsVite = () => {
         console.error('Error fetching comics:', error);
         setLoading(false);
       });
+
+    axios.get('http://localhost:5000/api/favComics')
+      .then(response => {
+        const favComicIds = response.data.map(comic => comic.id);
+        setFavorites(favComicIds);
+      })
+      .catch(error => {
+        console.error('Error fetching favorite comics:', error);
+      });
   }, []);
+
 
   const customStyles = {
     content: {
@@ -100,8 +141,8 @@ const ComicsVite = () => {
         <h1>Descubre el Universo de ABC Comics y Películas</h1>
         <p>El sitio web de confianza donde puedes encontrar tus cómics favoritos y toda la información que necesitas. ¡Solo disfruta!</p>
         <div className="sections">
-          <button>Comics favoritos</button>
-
+          <div className="website" onClick={() => redirectUrl("website")}></div>
+          <div className="github" onClick={() => redirectUrl("gitHub")}></div>
         </div>
       </div>
 
@@ -119,15 +160,29 @@ const ComicsVite = () => {
               onChange={handleSearchChange}
             />
             <div className="btnDisplay">
-              <button onClick={() => toggleViewMode('grid')} className={viewMode === 'grid' ? 'active' : ''}>Grilla</button>
-              <button onClick={() => toggleViewMode('list')} className={viewMode === 'list' ? 'active' : ''}>Lista</button>
+              <label className="switch">
+                <input type="checkbox" checked={viewMode === 'list'} onChange={toggleViewMode} />
+                <div className="switch--toggle"></div>
+              </label>
+              <div className="favComicsBlack"></div>
             </div>
           </div>
 
           {viewMode === 'grid' ? (
-            <CardGridComponent comics={currentComics} formatDate={formatDate} openModal={openModal} />
+            <CardGridComponent
+              comics={currentComics}
+              formatDate={formatDate}
+              openModal={openModal}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
           ) : (
-            <CardListComponent comics={currentComics} formatDate={formatDate} openModal={openModal} />
+            <CardListComponent
+              comics={currentComics}
+              formatDate={formatDate}
+              openModal={openModal}
+
+            />
           )}
         </div>
       )}
@@ -158,7 +213,6 @@ const ComicsVite = () => {
               </div>
 
               <div className="informationComic">
-
                 <h1>{comicDetails.name}</h1>
                 <h3 className='DescriptionComicsDetails'><span className='boldSubTitle'>Descripción: </span>{comicDetails.description}</h3>
                 <h3><span className='boldSubTitle'>Fecha de publicación</span>: {comicDetails.cover_date}</h3>
@@ -187,9 +241,8 @@ const ComicsVite = () => {
             </div>
           </div>
         </Modal>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
 

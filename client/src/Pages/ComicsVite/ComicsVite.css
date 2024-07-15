@@ -27,9 +27,9 @@
 .comicsVite {}
 
 .introduction {
-    background-color: #131126;
+    background-color: #be7b22;
     width: 100%;
-    height: 45vh;
+    height: 40vh;
     color: white;
     display: flex;
     flex-wrap: wrap;
@@ -68,6 +68,30 @@
     border-radius: 15px;
 }
 
+.website {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid;
+    border-radius: 50%;
+    cursor: pointer;
+    background-image: url("public/img/website.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50%;
+}
+
+.github {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid;
+    border-radius: 50%;
+    cursor: pointer;
+    background-image: url("public/img/github icon.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50%;
+}
+
 .loading {
     text-align: center;
     flex-direction: column;
@@ -102,10 +126,72 @@
     align-items: center;
 }
 
-.btnDisplay>button {
+.favComicsBlack {
     width: 3rem;
     height: 3rem;
+    border: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
     border-radius: 50%;
+    cursor: pointer;
+    background-image: url("public/img/heart.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50%;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+}
+
+.switch input[type='checkbox'] {
+    display: none;
+}
+
+.switch .switch--toggle {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #be7b22;
+    border-radius: 15px;
+    transition: 0.4s;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.switch .switch--toggle:before {
+    position: absolute;
+    content: url("");
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("public/img/Grilla Icon.svg");
+    height: 26px;
+    width: 26px;
+    top: 50%;
+    left: 2px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 50%;
+    border: 2px solid #aaa;
+    transform: translateY(-50%);
+    transition: 0.4s;
+}
+
+.switch input[type='checkbox']:checked+.switch--toggle {
+    background-color: rgb(0, 87, 128);
+}
+
+.switch input[type='checkbox']:checked+.switch--toggle:before {
+    transform: translate(28px, -50%);
+    content: url("");
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("public/img/Lista Icon.svg");
 }
 
 .pagination {
@@ -121,6 +207,7 @@
     margin: 0 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    border-radius: 50%;
 }
 
 .pagination button:hover {
@@ -128,7 +215,7 @@
 }
 
 .pagination .active {
-    background-color: #007bff;
+    background-color: rgb(0, 87, 128);
     color: white;
 }
 
